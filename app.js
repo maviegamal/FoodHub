@@ -6,7 +6,11 @@ const { useState, useEffect } = React;
    Navbar
 ========================= */
 
-function Navbar({ setPage }) {
+/* =========================
+   Navbar
+========================= */
+
+function Navbar({ setPage, cartCount }) {
 
     return (
 
@@ -52,6 +56,15 @@ function Navbar({ setPage }) {
                             </button>
                         </li>
 
+                        <li className="nav-item">
+                            <button
+                                className="nav-link btn"
+                                onClick={() => setPage("cart")}
+                            >
+                                Cart 🛒 ({cartCount})
+                            </button>
+                        </li>
+
                     </ul>
 
                 </div>
@@ -63,7 +76,6 @@ function Navbar({ setPage }) {
     );
 
 }
-
 
 /* =========================
    Food Card - Phase 2
@@ -395,6 +407,8 @@ function App() {
 
     const [foods, setFoods] = useState([]);
 
+    const [cart, setCart] = useState([]);
+
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState("");
@@ -463,18 +477,43 @@ function App() {
 
     /* Temporary Add To Cart Function */
 
-    const addToCart = (food) => {
+    /* Add To Cart Function */
 
-        alert(food.name + " added to cart!");
+const addToCart = (food) => {
 
-    };
+    setCart(previousCart => {
 
+        const existingItem = previousCart.find(
+            item => item.id === food.id
+        );
+
+        if (existingItem) {
+
+            return previousCart.map(item =>
+                item.id === food.id
+                    ? { ...item, quantity: item.quantity + 1 }
+                    : item
+            );
+
+        }
+
+        return [...previousCart, { ...food, quantity: 1 }];
+
+    });
+
+};
 
     return (
 
         <>
 
-            <Navbar setPage={setPage} />
+            <Navbar
+    setPage={setPage}
+    cartCount={cart.reduce(
+        (total, item) => total + item.quantity,
+        0
+    )}
+/>
 
 
             {page === "home" && (
