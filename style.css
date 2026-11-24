@@ -119,3 +119,53 @@ body {
 
     margin-bottom: 15px;
 }
+
+/* Section */
+
+.section-title {
+    font-weight: bold;
+
+    font-size: 40px;
+}
+
+/* About */
+
+.about-image {
+    width: 100%;
+
+    border-radius: 15px;
+}
+
+/* Cart */
+
+.cart-image {
+    width: 80px;
+    height: 80px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+}
+
+/* Footer */
+
+footer {
+    background-color: #171717;
+
+    color: white;
+
+    padding: 50px 0;
+}
+
+/* Loading */
+
+.loading {
+    min-height: 300px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
