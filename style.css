@@ -169,3 +169,20 @@ footer {
     align-items: center;
 }
 
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .hero-title {
+        font-size: 40px;
+    }
+
+    .hero {
+        min-height: 75vh;
+    }
+
+    .section-title {
+        font-size: 32px;
+    }
+
+}
