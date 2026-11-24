@@ -1,0 +1,26 @@
+name: CI
+
+# Runs automatically on every push to main and on every pull request
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # Download the project code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Make sure the main project files exist
+      - name: Check required files exist
+        run: |
+          test -f index.html
+          test -f app.js
+          test -f style.css
+
+      # Check index.html for HTML mistakes
+      - name: Validate HTML
+        run: npx --yes htmlhint index.html
