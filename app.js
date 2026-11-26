@@ -6,7 +6,11 @@ const { useState, useEffect } = React;
    Navbar
 ========================= */
 
-function Navbar({ setPage }) {
+/* =========================
+   Navbar
+========================= */
+
+function Navbar({ setPage, cartCount }) {
 
     return (
 
@@ -52,6 +56,15 @@ function Navbar({ setPage }) {
                             </button>
                         </li>
 
+                        <li className="nav-item">
+                            <button
+                                className="nav-link btn"
+                                onClick={() => setPage("cart")}
+                            >
+                                Cart 🛒 ({cartCount})
+                            </button>
+                        </li>
+
                     </ul>
 
                 </div>
@@ -63,7 +76,6 @@ function Navbar({ setPage }) {
     );
 
 }
-
 
 /* =========================
    Food Card - Phase 2
@@ -383,6 +395,130 @@ function Menu({ foods, loading, error, addToCart }) {
     );
 
 }
+/* =========================
+   Cart - Phase 3
+========================= */
+
+function Cart({ cart, increaseQuantity, decreaseQuantity, removeFromCart }) {
+
+    return (
+
+        <section className="container py-5">
+
+            <div className="text-center mb-5">
+
+                <h1 className="section-title">
+                    Your Shopping Cart 🛒
+                </h1>
+
+                <p className="text-muted">
+                    Review your selected meals.
+                </p>
+
+            </div>
+
+            {cart.length === 0 ? (
+
+                <div className="text-center py-5">
+
+                    <h4>Your cart is empty!</h4>
+
+                    <p className="text-muted">
+                        Add some delicious meals from our menu.
+                    </p>
+
+                </div>
+
+            ) : (
+
+                <div className="row">
+
+                    {cart.map(item => (
+
+                        <div className="col-12 mb-3" key={item.id}>
+
+                            <div className="card shadow-sm">
+
+                                <div className="card-body">
+
+                                    <div className="row align-items-center">
+
+                                        <div className="col-md-3">
+
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                className="img-fluid rounded"
+                                            />
+
+                                        </div>
+
+                                        <div className="col-md-3">
+
+                                            <h5>{item.name}</h5>
+
+                                            <p className="text-muted">
+                                                ${item.price} each
+                                            </p>
+
+                                        </div>
+
+                                        <div className="col-md-3">
+
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                onClick={() => decreaseQuantity(item.id)}
+                                            >
+                                                -
+                                            </button>
+
+                                            <span className="mx-3">
+                                                {item.quantity}
+                                            </span>
+
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                onClick={() => increaseQuantity(item.id)}
+                                            >
+                                                +
+                                            </button>
+
+                                        </div>
+
+                                        <div className="col-md-3">
+
+                                            <p className="fw-bold">
+                                                ${(item.price * item.quantity).toFixed(2)}
+                                            </p>
+
+                                            <button
+                                                className="btn btn-danger btn-sm"
+                                                onClick={() => removeFromCart(item.id)}
+                                            >
+                                                Remove
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    ))}
+
+                </div>
+
+            )}
+
+        </section>
+
+    );
+
+}
 
 
 /* =========================
@@ -394,6 +530,8 @@ function App() {
     const [page, setPage] = useState("home");
 
     const [foods, setFoods] = useState([]);
+
+    const [cart, setCart] = useState([]);
 
     const [loading, setLoading] = useState(true);
 
@@ -463,18 +601,85 @@ function App() {
 
     /* Temporary Add To Cart Function */
 
-    const addToCart = (food) => {
+    /* Add To Cart Function */
 
-        alert(food.name + " added to cart!");
+const addToCart = (food) => {
 
-    };
+    setCart(previousCart => {
 
+        const existingItem = previousCart.find(
+            item => item.id === food.id
+        );
+
+        if (existingItem) {
+
+            return previousCart.map(item =>
+                item.id === food.id
+                    ? { ...item, quantity: item.quantity + 1 }
+                    : item
+            );
+
+        }
+
+        return [...previousCart, { ...food, quantity: 1 }];
+
+    });
+
+};
+
+/* Increase Item Quantity */
+
+const increaseQuantity = (id) => {
+
+    setCart(previousCart =>
+        previousCart.map(item =>
+            item.id === id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+        )
+    );
+
+};
+
+
+/* Decrease Item Quantity */
+
+const decreaseQuantity = (id) => {
+
+    setCart(previousCart =>
+        previousCart
+            .map(item =>
+                item.id === id
+                    ? { ...item, quantity: item.quantity - 1 }
+                    : item
+            )
+            .filter(item => item.quantity > 0)
+    );
+
+};
+
+
+/* Remove Item From Cart */
+
+const removeFromCart = (id) => {
+
+    setCart(previousCart =>
+        previousCart.filter(item => item.id !== id)
+    );
+
+};
 
     return (
 
         <>
 
-            <Navbar setPage={setPage} />
+            <Navbar
+    setPage={setPage}
+    cartCount={cart.reduce(
+        (total, item) => total + item.quantity,
+        0
+    )}
+/>
 
 
             {page === "home" && (
@@ -492,6 +697,17 @@ function App() {
                 />
 
             )}
+            
+            {page === "cart" && (
+
+    <Cart
+        cart={cart}
+        increaseQuantity={increaseQuantity}
+        decreaseQuantity={decreaseQuantity}
+        removeFromCart={removeFromCart}
+    />
+
+)}
 
         </>
 
